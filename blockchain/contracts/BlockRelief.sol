@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+contract BlockRelief {
+ struct Campaign {string id;string name;string disasterType;string location;string description;uint256 targetAmount;uint256 collectedAmount;bool active;uint256 createdAt;address creator;}
+ struct Donation {uint256 id;string campaignId;address donor;uint256 amount;uint256 timestamp;}
+ struct Resource {string id;string resourceType;uint256 quantity;string currentLocation;string destination;string status;uint256 createdAt;address registrar;}
+ mapping(string=>Campaign) public campaigns;mapping(uint256=>Donation) public donations;mapping(string=>Resource) public resources;uint256 public donationCount;
+ event CampaignCreated(string indexed campaignId,address indexed creator);event DonationReceived(uint256 indexed donationId,string indexed campaignId,address indexed donor,uint256 amount);event ResourceRegistered(string indexed resourceId,address indexed registrar);event ResourceTransferred(string indexed resourceId,string fromLocation,string toLocation,string status);event ExpenseRecorded(string indexed campaignId,uint256 amount,string category);
+ function createCampaign(string calldata id,string calldata name,string calldata disasterType,string calldata location,string calldata description,uint256 targetAmount) external {require(campaigns[id].createdAt==0,'Campaign exists');campaigns[id]=Campaign(id,name,disasterType,location,description,targetAmount,0,true,block.timestamp,msg.sender);emit CampaignCreated(id,msg.sender);}
+ function donate(string calldata campaignId) external payable {Campaign storage c=campaigns[campaignId];require(c.createdAt!=0&&c.active,'Invalid campaign');require(msg.value>0,'Amount is zero');c.collectedAmount+=msg.value;donations[++donationCount]=Donation(donationCount,campaignId,msg.sender,msg.value,block.timestamp);emit DonationReceived(donationCount,campaignId,msg.sender,msg.value);}
+ function registerResource(string calldata id,string calldata resourceType,uint256 quantity,string calldata location,string calldata destination) external {require(resources[id].createdAt==0,'Resource exists');resources[id]=Resource(id,resourceType,quantity,location,destination,'REGISTERED',block.timestamp,msg.sender);emit ResourceRegistered(id,msg.sender);}
+ function transferResource(string calldata id,string calldata toLocation,string calldata status) external {Resource storage r=resources[id];require(r.createdAt!=0,'Resource missing');string memory old=r.currentLocation;r.currentLocation=toLocation;r.status=status;emit ResourceTransferred(id,old,toLocation,status);}
+ function recordExpense(string calldata campaignId,uint256 amount,string calldata category) external {require(campaigns[campaignId].createdAt!=0,'Campaign missing');require(amount>0,'Amount is zero');emit ExpenseRecorded(campaignId,amount,category);}
+ function getCampaign(string calldata id) external view returns(Campaign memory){return campaigns[id];}function getDonation(uint256 id) external view returns(Donation memory){return donations[id];}function getResource(string calldata id) external view returns(Resource memory){return resources[id];}
+}

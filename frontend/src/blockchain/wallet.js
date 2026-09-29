@@ -1,0 +1,4 @@
+import {BrowserProvider,formatEther} from 'ethers';
+export function getProvider(){if(!window.ethereum)throw new Error('BridgeKey/EVM wallet not detected. Install BridgeKey or another EIP-1193 wallet.');return new BrowserProvider(window.ethereum)}
+export async function connectWallet(){const provider=getProvider();const accounts=await provider.send('eth_requestAccounts',[]);const signer=await provider.getSigner();const network=await provider.getNetwork();const balance=await provider.getBalance(accounts[0]);return{provider,signer,address:accounts[0],chainId:network.chainId.toString(),balance:formatEther(balance)}}
+export async function getWallet(){const provider=getProvider();const accounts=await provider.send('eth_accounts',[]);if(!accounts[0])return null;const network=await provider.getNetwork();const balance=await provider.getBalance(accounts[0]);return{provider,address:accounts[0],chainId:network.chainId.toString(),balance:formatEther(balance)}}

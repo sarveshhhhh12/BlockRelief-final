@@ -1,0 +1,1 @@
+{"name":"blockrelief","private":true,"scripts":{"install:all":"npm --prefix frontend install && npm --prefix backend install && npm --prefix blockchain install","dev":"concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"","test":"npm --prefix blockchain test && npm --prefix backend test"},"devDependencies":{"concurrently":"^9.1.2"}}

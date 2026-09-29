@@ -1,0 +1,8 @@
+import mongoose from 'mongoose';
+const campaign=new mongoose.Schema({campaignId:{type:String,unique:true},name:String,disasterType:String,location:String,description:String,targetAmount:Number,collectedAmount:{type:Number,default:0},status:{type:String,default:'Active'},creator:String,createdAt:{type:Date,default:Date.now}});
+const donation=new mongoose.Schema({donorAddress:String,campaignId:String,amount:Number,transactionHash:{type:String,unique:true},network:String,timestamp:{type:Date,default:Date.now}});
+const resource=new mongoose.Schema({resourceId:{type:String,unique:true},type:String,batchNumber:String,quantity:Number,source:String,currentLocation:String,destination:String,status:String,createdAt:{type:Date,default:Date.now},qrCodeData:String,blockchainTransactionHash:String});
+const resourceEvent=new mongoose.Schema({resourceId:String,type:String,location:String,quantity:Number,timestamp:{type:Date,default:Date.now}});
+const center=new mongoose.Schema({name:String,address:String,latitude:Number,longitude:Number,contact:String,foodQuantity:Number,waterQuantity:Number,medicineQuantity:Number,capacity:Number,currentAffectedPopulation:Number});
+const expense=new mongoose.Schema({title:String,amount:Number,category:String,campaign:String,date:Date,description:String,receiptRef:String});
+export const Campaign=mongoose.model('Campaign',campaign);export const Donation=mongoose.model('Donation',donation);export const Resource=mongoose.model('Resource',resource);export const ResourceEvent=mongoose.model('ResourceEvent',resourceEvent);export const ReliefCenter=mongoose.model('ReliefCenter',center);export const Expense=mongoose.model('Expense',expense);
